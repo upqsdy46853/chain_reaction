@@ -24,8 +24,13 @@ using namespace std;
  * 3. The function that return the color fo the cell(row, col)
  * 4. The function that print out the current board statement
 *************************************************************************/
-
-
+#define rows 5
+#define cols 6
+void my_srand(void){
+    long long cpu_cycle;
+    asm volatile(".byte 15;.byte 49" : "=A" (cpu_cycle));
+    srand((unsigned int)cpu_cycle);
+}
 void algorithm_A(Board board, Player player, int index[]){
 
     // cout << board.get_capacity(0, 0) << endl;
@@ -35,10 +40,27 @@ void algorithm_A(Board board, Player player, int index[]){
 
     //////////// Random Algorithm ////////////
     // Here is the random algorithm for your reference, you can delete or comment it.
-    srand(time(NULL));
+    my_srand();
     int row, col;
     int color = player.get_color();
     
+    //win
+    for(int i=0;i<rows;i++){
+        for(int j=0;j<cols;j++){
+            if(board.get_cell_color(i,j)==color && board.get_capacity(i,j)-board.get_orbs_num(i,j)==1){
+                Board tmp=board;
+                tmp.place_orb(i,j,&player);
+                if(tmp.win_the_game(player)){
+                    index[0] = i;
+                    index[1] = j;
+                    cout<<"win step!!!!!!!"<<endl;
+                    cout<<"row :"<<index[0]<<endl;
+                    cout<<"col :"<<index[1]<<endl;
+                    return;
+                }
+            }
+        }
+    }
     while(1){
         row = rand() % 5;
         col = rand() % 6;
