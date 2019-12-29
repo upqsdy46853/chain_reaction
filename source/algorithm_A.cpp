@@ -26,13 +26,48 @@ using namespace std;
 *************************************************************************/
 #define rows 5
 #define cols 6
-void my_srand(void){
-    long long cpu_cycle;
-    asm volatile(".byte 15;.byte 49" : "=A" (cpu_cycle));
-    srand((unsigned int)cpu_cycle);
+
+int enemy_move(Board enemy_board,int row,int col,Player *player_ptr,Player *enemy_ptr,int color,int enemy_color){
+    enemy_board.place_orb(row,col,enemy_ptr);
+    //enemy_board.print_current_board(row,col,100000000);
+    int new_ord=0;
+    for(int i=0;i<rows;i++){
+        for(int j=0;j<cols;j++){
+            if(enemy_board.get_cell_color(i,j)==color){
+                new_ord++;
+            }
+        }
+    }
+    return new_ord;
+}
+int you_move(Board moved_board,int row,int col,Player *player_ptr,Player *enemy_ptr,int init_ord,int color,int enemy_color){
+    int min_score=10000;
+    cout<<"***********************************************************************"<<endl;
+    cout<<"                      if you move to ("<<row<<","<<col<<")"<<endl;
+    moved_board.place_orb(row,col,player_ptr);
+    cout<<"***********************************************************************"<<endl;
+    
+    for(int i=0;i<rows;i++){
+        for(int j=0;j<cols;j++){
+            if(moved_board.get_cell_color(i, j) == enemy_color || moved_board.get_cell_color(i, j) == 'w'){
+                int score;
+                cout<<"------------------------------------------"<<endl;
+                cout<<"init_ord = "<<init_ord<<endl;
+                cout<<"if enemy move to ("<<i<<","<<j<<")"<<endl;
+                int new_ord = enemy_move(moved_board,i,j,player_ptr,enemy_ptr,color,enemy_color);
+                cout<<"new_ord = "<<new_ord<<endl;
+                score = new_ord - init_ord;
+                cout<<"score: "<<score<<endl;
+                if(score<min_score){
+                    min_score=score;
+                }
+            }
+        }
+    }
+    return min_score;
 }
 void algorithm_A(Board board, Player player, int index[]){
-
+    
     // cout << board.get_capacity(0, 0) << endl;
     // cout << board.get_orbs_num(0, 0) << endl;
     // cout << board.get_cell_color(0, 0) << endl;
@@ -40,10 +75,15 @@ void algorithm_A(Board board, Player player, int index[]){
 
     //////////// Random Algorithm ////////////
     // Here is the random algorithm for your reference, you can delete or comment it.
-    my_srand();
     int row, col;
     int color = player.get_color();
-    
+    int enemy_color ;
+    if(color == 'r')
+        enemy_color='b';
+    else
+        enemy_color='r';
+    Player enemy(enemy_color);
+
     //win
     for(int i=0;i<rows;i++){
         for(int j=0;j<cols;j++){
@@ -61,12 +101,40 @@ void algorithm_A(Board board, Player player, int index[]){
             }
         }
     }
-    while(1){
-        row = rand() % 5;
-        col = rand() % 6;
-        if(board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w') break;
+    //best
+    cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
+    int max_score = -10000;
+    //count ord_num
+    int init_ord = 0;
+    for(int i=0;i<rows;i++){
+        for(int j=0;j<cols;j++){
+            if(board.get_cell_color(i,j)==color)
+                init_ord++;
+        }
     }
 
-    index[0] = row;
-    index[1] = col;
+    for(int i=0;i<rows;i++){
+        for(int j=0;j<cols;j++){
+            int score=0;
+            if(board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w'){
+                score=you_move(board,i,j,&player,&enemy,init_ord,color,enemy_color);
+                cout<<endl;
+                cout<<"The score placing ord in ("<<i<<","<<j<<") is "<<score<<endl;
+                if(score>max_score){
+                    max_score = score;
+                    index[0]=i;
+                    index[1]=j;
+                }
+                cout<<"curren_max_score = "<<max_score<<endl;
+            }
+        }
+    }
+    cout<<endl;
+    cout<<endl;
+    cout<<"***********************************************************************"<<endl;
+    cout<<"max_score = "<<max_score<<endl;
+    cout<<"best step is ("<<index[0]<<","<<index[1]<<")"<<endl;
+    cout<<"***********************************************************************"<<endl;
+     cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
+    
 }

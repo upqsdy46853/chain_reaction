@@ -68,13 +68,19 @@ void Board::print_current_board(int i, int j, int round){
     char symbol;
 
     ////// Print out the current state of the board //////
-    system(CLEAR);
+    //system(CLEAR);
+    cout<<endl;
+    cout<<endl;
+    cout<<endl;
+    cout<<endl;
     cout << "Round: " << round << endl;
     cout << "Place orb on (" << i << ", " << j << ")" << endl;
-    cout << "=========================================" << endl;
+    cout << "    0      1      2      3      4      5"<<endl;
+    cout << "  =========================================" << endl;
     for(int i = 0; i < ROW; i++){
+        cout<<i<<" ";
         for(int j = 0; j < COL; j++){
-
+            
             symbol = cells[i][j].get_color();
             switch(symbol){
                 case 'r':
@@ -107,7 +113,7 @@ void Board::print_current_board(int i, int j, int round){
         }
         cout << endl;
     }
-    cout << "=========================================" << endl << endl;
+    cout << "  =========================================" << endl << endl;
 }
 
 bool Board::place_orb(int i, int j, Player * player){
