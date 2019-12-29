@@ -27,6 +27,11 @@ using namespace std;
 #define rows 5
 #define cols 6
 
+bool isCorner(int row,int col){
+    if((row==0 && col==0) || (row==0 && col==cols-1) || (row==rows-1 && col==0) || (row==rows-1 && col == cols-1))
+        return true;
+    return false;
+}
 int enemy_move(Board enemy_board,int row,int col,Player *player_ptr,Player *enemy_ptr,int color,int enemy_color){
     enemy_board.place_orb(row,col,enemy_ptr);
     //enemy_board.print_current_board(row,col,100000000);
@@ -41,30 +46,52 @@ int enemy_move(Board enemy_board,int row,int col,Player *player_ptr,Player *enem
     return new_ord;
 }
 int you_move(Board moved_board,int row,int col,Player *player_ptr,Player *enemy_ptr,int init_ord,int color,int enemy_color){
+    int bonus=0;
     int min_score=10000;
-    cout<<"***********************************************************************"<<endl;
-    cout<<"                      if you move to ("<<row<<","<<col<<")"<<endl;
+    //cal bonus
+    //isCorner
+    if(isCorner(row,col) && moved_board.get_orbs_num(row,col)==0)
+        bonus+=1;
+    //enemy ord surrounding
+    if(row-1>=0 && moved_board.get_cell_color(row-1,col)==enemy_color && moved_board.get_capacity(row-1,col)-moved_board.get_orbs_num(row-1,col)==moved_board.get_capacity(row,col)-moved_board.get_orbs_num(row,col)){
+        bonus+=1;
+    }
+    if(row+1<rows && moved_board.get_cell_color(row+1,col)==enemy_color && moved_board.get_capacity(row+1,col)-moved_board.get_orbs_num(row+1,col)==moved_board.get_capacity(row,col)-moved_board.get_orbs_num(row,col)){
+        bonus+=1;
+    }
+    if(col-1>=0 && moved_board.get_cell_color(row,col-1)==enemy_color && moved_board.get_capacity(row,col-1)-moved_board.get_orbs_num(row,col-1)==moved_board.get_capacity(row,col)-moved_board.get_orbs_num(row,col)){
+        bonus+=1;
+    }
+    if(col+1<cols && moved_board.get_cell_color(row,col+1)==enemy_color && moved_board.get_capacity(row,col+1)-moved_board.get_orbs_num(row,col+1)==moved_board.get_capacity(row,col)-moved_board.get_orbs_num(row,col)){
+        bonus+=1;
+    }
+    
+    
+    //cout<<"***********************************************************************"<<endl;
+    //cout<<"                      if you move to ("<<row<<","<<col<<")"<<endl;
     moved_board.place_orb(row,col,player_ptr);
-    cout<<"***********************************************************************"<<endl;
+    //moved_board.print_current_board(row,col,0);
+    //cout<<"***********************************************************************"<<endl;
     
     for(int i=0;i<rows;i++){
         for(int j=0;j<cols;j++){
             if(moved_board.get_cell_color(i, j) == enemy_color || moved_board.get_cell_color(i, j) == 'w'){
                 int score;
-                cout<<"------------------------------------------"<<endl;
-                cout<<"init_ord = "<<init_ord<<endl;
-                cout<<"if enemy move to ("<<i<<","<<j<<")"<<endl;
+                //cout<<"------------------------------------------"<<endl;
+                //cout<<"init_ord = "<<init_ord<<endl;
+                //cout<<"if enemy move to ("<<i<<","<<j<<")"<<endl;
                 int new_ord = enemy_move(moved_board,i,j,player_ptr,enemy_ptr,color,enemy_color);
-                cout<<"new_ord = "<<new_ord<<endl;
+                //cout<<"new_ord = "<<new_ord<<endl;
                 score = new_ord - init_ord;
-                cout<<"score: "<<score<<endl;
+                //cout<<"score: "<<score<<endl;
                 if(score<min_score){
                     min_score=score;
                 }
             }
         }
     }
-    return min_score;
+    
+    return min_score + bonus;
 }
 void algorithm_A(Board board, Player player, int index[]){
     
@@ -102,7 +129,7 @@ void algorithm_A(Board board, Player player, int index[]){
         }
     }
     //best
-    cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
+    //cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
     int max_score = -10000;
     //count ord_num
     int init_ord = 0;
@@ -118,23 +145,24 @@ void algorithm_A(Board board, Player player, int index[]){
             int score=0;
             if(board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w'){
                 score=you_move(board,i,j,&player,&enemy,init_ord,color,enemy_color);
-                cout<<endl;
-                cout<<"The score placing ord in ("<<i<<","<<j<<") is "<<score<<endl;
+                //cout<<endl;
+                //cout<<"The score placing ord in ("<<i<<","<<j<<") is "<<score<<endl;
                 if(score>max_score){
                     max_score = score;
                     index[0]=i;
                     index[1]=j;
                 }
-                cout<<"curren_max_score = "<<max_score<<endl;
+                //cout<<"curren_max_score = "<<max_score<<endl;
             }
         }
     }
-    cout<<endl;
-    cout<<endl;
-    cout<<"***********************************************************************"<<endl;
-    cout<<"max_score = "<<max_score<<endl;
-    cout<<"best step is ("<<index[0]<<","<<index[1]<<")"<<endl;
-    cout<<"***********************************************************************"<<endl;
-     cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
+
+    //cout<<endl;
+    //cout<<endl;
+    //cout<<"***********************************************************************"<<endl;
+    //cout<<"max_score = "<<max_score<<endl;
+    //cout<<"best step is ("<<index[0]<<","<<index[1]<<")"<<endl;
+    //cout<<"***********************************************************************"<<endl;
+    //cout<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
     
 }
