@@ -26,6 +26,45 @@ using namespace std;
 *************************************************************************/
 #define rows 5
 #define cols 6
+bool isCorner(int row,int col){
+    if((row==0&&col==0) || (row==rows-1&&col==0) || (row==rows-1&&col==cols-1) || (row==rows-1&&col==cols-1) )
+        return true;
+    return false;
+}
+bool isEdge(int row,int col){
+    if((row==0||row==rows-1||col==0||col==cols-1) && !isCorner(row,col))
+        return true;
+    return false;
+}
+int enemySurrounding(Board board,int row,int col,Player *player,Player *enemy){
+    int dist = board.get_capacity(row,col)-board.get_orbs_num(row,col);
+    int min_enemy_dist = 4;
+    if(row-1>=0&&board.get_cell_color(row-1,col)==enemy->get_color()){
+        int enemy_dist = board.get_capacity(row-1,col)-board.get_orbs_num(row-1,col);
+        if(enemy_dist<min_enemy_dist)
+            min_enemy_dist = enemy_dist;
+    }
+    if(row+1<rows&&board.get_cell_color(row+1,col)==enemy->get_color()){
+        int enemy_dist = board.get_capacity(row+1,col)-board.get_orbs_num(row+1,col);
+        if(enemy_dist<min_enemy_dist)
+            min_enemy_dist = enemy_dist;
+    }
+    if(col-1>=0&&board.get_cell_color(row,col-1)==enemy->get_color()){
+        int enemy_dist = board.get_capacity(row,col-1)-board.get_orbs_num(row,col-1);
+        if(enemy_dist<min_enemy_dist)
+            min_enemy_dist = enemy_dist;
+    }
+    if(col+1<cols&&board.get_cell_color(row,col+1)==enemy->get_color()){
+        int enemy_dist = board.get_capacity(row,col+1)-board.get_orbs_num(row,col+1);
+        if(enemy_dist<min_enemy_dist)
+            min_enemy_dist = enemy_dist;
+    }
+    if(dist==min_enemy_dist&&min_enemy_dist!=4){
+        cout<<"enemy surrounding"<<endl;
+        return 3;
+    }
+    return 0;
+}
 int enemy_move(Board enemy_board,int row,int col,Player* player,Player* enemy){
     enemy_board.place_orb(row,col,enemy);
     int remained_ord=0;
@@ -39,6 +78,20 @@ int enemy_move(Board enemy_board,int row,int col,Player* player,Player* enemy){
     return remained_ord;
 }
 int move(Board board,int row,int col,Player* player,Player* enemy,int init_ord){
+    //before placing ord
+    int bonus=0;
+    if(isCorner(row,col)&&board.get_cell_color(row,col)=='w'){
+        cout<<"Corner! bonus: 2"<<endl;
+        bonus+=2;
+        
+    }
+    else if(isEdge(row,col)&&board.get_cell_color(row,col)=='w'){
+        cout<<"Edge! bonus: 1"<<endl;
+        bonus+=1;
+    }
+    bonus += enemySurrounding(board,row,col,player,enemy);
+    
+    //after placing ord
     board.place_orb(row,col,player);
     int min=10000;
     for(int i=0;i<rows;i++){
@@ -51,7 +104,8 @@ int move(Board board,int row,int col,Player* player,Player* enemy,int init_ord){
             }
         }
     }
-    return min - init_ord;
+    
+    return min - init_ord + bonus;
 }
 void algorithm_A(Board board, Player player, int index[]){
 
@@ -91,6 +145,7 @@ void algorithm_A(Board board, Player player, int index[]){
         for(int j=0;j<cols;j++){
             if(board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w'){
                 int score=move(board,i,j,&player,&enemy,init_ord);
+                cout<<"score: "<<score<<endl<<"("<<i<<", "<<j<<")"<<endl<<endl;
                 if(score > max){
                     max = score;
                     index[0]=i;
