@@ -59,6 +59,9 @@ int enemySurrounding(Board board,int row,int col,Player *player,Player *enemy){
         if(enemy_dist<min_enemy_dist)
             min_enemy_dist = enemy_dist;
     }
+    if(dist>min_enemy_dist){
+        return -3;
+    }
     if(dist==min_enemy_dist&&min_enemy_dist!=4){
         cout<<"enemy surrounding"<<endl;
         return 3;
