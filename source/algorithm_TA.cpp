@@ -288,7 +288,7 @@ float gameTree::BoardEvaluator(TreeNode *Node, int difficulty){
 
 void algorithm_B(Board board, Player player, int index[]){
     // algorithm_B is randomMove version bot
-    srand(time(NULL)*time(NULL));
+    //srand(time(NULL)*time(NULL));
     int row, col;
     char color = player.get_color();
     
@@ -299,7 +299,7 @@ void algorithm_B(Board board, Player player, int index[]){
     }
 
     index[0] = row;
-    index[1] = col;
+    index[1] = col; 
 }
 
 void algorithm_C(Board board, Player player, int index[]){
@@ -317,6 +317,12 @@ void algorithm_C(Board board, Player player, int index[]){
                     col=j;
             }
         }
+    }
+    while(1){
+        if(board.get_cell_color(row,col)==player.get_color()||board.get_cell_color(row,col)=='w')
+            break;
+        row=rand()%5;
+        col=rand()%6;
     }
     index[0]=row;
     index[1]=col;
@@ -336,4 +342,8 @@ void algorithm_E(Board board, Player player, int index[]){
     TreeNode *orbNode = gt.chooseOrb(HARD_BOARD_EVALUATOR);
     index[0] = orbNode->getX();
     index[1] = orbNode->getY();
+}
+void algorithm_F(Board board, Player player, int index[]){
+    // algorithm_F is heithoff version bot
+        cin>>index[0]>>index[1];
 }

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
-#include <time.h>
+#include <unistd.h>
 #include "../include/algorithm.h"
 
 using namespace std;
@@ -27,7 +27,7 @@ using namespace std;
 #define rows 5
 #define cols 6
 bool isCorner(int row,int col){
-    if((row==0&&col==0) || (row==rows-1&&col==0) || (row==rows-1&&col==cols-1) || (row==rows-1&&col==cols-1) )
+    if((row==0&&col==0) || (row==rows-1&&col==0) || (row==0&&col==cols-1) || (row==rows-1&&col==cols-1) )
         return true;
     return false;
 }
@@ -63,7 +63,7 @@ int enemySurrounding(Board board,int row,int col,Player *player,Player *enemy){
         return -3;
     }
     if(dist==min_enemy_dist&&min_enemy_dist!=4){
-        cout<<"enemy surrounding"<<endl;
+       // cout<<"enemy surrounding"<<endl;
         return 3;
     }
     return 0;
@@ -84,16 +84,19 @@ int move(Board board,int row,int col,Player* player,Player* enemy,int init_ord){
     //before placing ord
     int bonus=0;
     if(isCorner(row,col)&&board.get_cell_color(row,col)=='w'){
-        cout<<"Corner! bonus: 2"<<endl;
+       // cout<<"Corner! bonus: 2"<<endl;
         bonus+=2;
         
     }
     else if(isEdge(row,col)&&board.get_cell_color(row,col)=='w'){
-        cout<<"Edge! bonus: 1"<<endl;
+       // cout<<"Edge! bonus: 1"<<endl;
         bonus+=1;
     }
+    else if(board.get_capacity(row,col)-board.get_orbs_num(row,col)==1){
+       // cout<<"Boom!"<<endl;
+        bonus-=1;
+    }
     bonus += enemySurrounding(board,row,col,player,enemy);
-    
     //after placing ord
     board.place_orb(row,col,player);
     int min=10000;
@@ -124,9 +127,8 @@ void algorithm_A(Board board, Player player, int index[]){
                 if(tmp.win_the_game(player)){
                     index[0] = i;
                     index[1] = j;
-                    cout<<"win step!!!!!!!"<<endl;
-                    cout<<"row :"<<index[0]<<endl;
-                    cout<<"col :"<<index[1]<<endl;
+                    //cout<<"win step!!!!!!!"<<endl;
+                    cout<<"row :"<<index[0]<<"col :"<<index[1]<<endl;
                     return;
                 }
             }
@@ -148,7 +150,7 @@ void algorithm_A(Board board, Player player, int index[]){
         for(int j=0;j<cols;j++){
             if(board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w'){
                 int score=move(board,i,j,&player,&enemy,init_ord);
-                cout<<"score: "<<score<<endl<<"("<<i<<", "<<j<<")"<<endl<<endl;
+            //    cout<<"score: "<<score<<endl<<"("<<i<<", "<<j<<")"<<endl<<endl;
                 if(score > max){
                     max = score;
                     index[0]=i;
@@ -157,4 +159,5 @@ void algorithm_A(Board board, Player player, int index[]){
             }
         }
     }
+    //sleep(2);
 }
