@@ -70,6 +70,12 @@ int enemySurrounding(Board board,int row,int col,Player *player,Player *enemy){
 }
 int enemy_move(Board enemy_board,int row,int col,Player* player,Player* enemy){
     enemy_board.place_orb(row,col,enemy);
+    //lose step
+    
+    if(enemy_board.win_the_game(*enemy)){
+        return -10000;
+    }
+    
     int remained_ord=0;
     for(int i=0;i<rows;i++){
         for(int j=0;j<cols;j++){
@@ -105,6 +111,8 @@ int move(Board board,int row,int col,Player* player,Player* enemy,int init_ord){
             if(board.get_cell_color(i,j) == enemy->get_color()){
                 int remained_ord=enemy_move(board,i,j,player,enemy);
                 if(remained_ord < min){
+                    if(remained_ord==-10000)
+                        return -9999;
                     min = remained_ord;
                 }
             }
@@ -128,7 +136,7 @@ void algorithm_A(Board board, Player player, int index[]){
                     index[0] = i;
                     index[1] = j;
                     //cout<<"win step!!!!!!!"<<endl;
-                    cout<<"row :"<<index[0]<<"col :"<<index[1]<<endl;
+                    //cout<<"row :"<<index[0]<<" col :"<<index[1]<<endl;
                     return;
                 }
             }
@@ -150,7 +158,7 @@ void algorithm_A(Board board, Player player, int index[]){
         for(int j=0;j<cols;j++){
             if(board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w'){
                 int score=move(board,i,j,&player,&enemy,init_ord);
-            //    cout<<"score: "<<score<<endl<<"("<<i<<", "<<j<<")"<<endl<<endl;
+                //cout<<"score:"<<score<<" "<<"("<<i<<", "<<j<<")"<<endl;
                 if(score > max){
                     max = score;
                     index[0]=i;
@@ -158,6 +166,11 @@ void algorithm_A(Board board, Player player, int index[]){
                 }
             }
         }
+    }
+    if(max==-9999){
+        cout<<"i lose"<<endl;
+        //board.print_current_board(0,0,0);
+        //cin>>index[0]>>index[1];
     }
     //sleep(2);
 }

@@ -342,6 +342,25 @@ void algorithm_E(Board board, Player player, int index[]){
     TreeNode *orbNode = gt.chooseOrb(HARD_BOARD_EVALUATOR);
     index[0] = orbNode->getX();
     index[1] = orbNode->getY();
+    int color = player.get_color();
+    int enemy_color = (color == 'r' ? 'b':'r' );
+    Player enemy(enemy_color);
+    //win
+    for(int i=0;i<5;i++){
+        for(int j=0;j<6;j++){
+            if(board.get_cell_color(i,j)==color && board.get_capacity(i,j)-board.get_orbs_num(i,j)==1){
+                Board tmp=board;
+                tmp.place_orb(i,j,&player);
+                if(tmp.win_the_game(player)){
+                    index[0] = i;
+                    index[1] = j;
+                    //cout<<"win step!!!!!!!"<<endl;
+                    //cout<<"row :"<<index[0]<<" col :"<<index[1]<<endl;
+                    return;
+                }
+            }
+        }
+    }
 }
 void algorithm_F(Board board, Player player, int index[]){
     // algorithm_F is heithoff version bot
