@@ -1,8 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
-#include <unistd.h>
 #include "../include/algorithm.h"
-
 using namespace std;
 #define rows 5
 #define cols 6
@@ -43,7 +41,6 @@ int enemySurrounding(Board board,int row,int col,Player *player,Player *enemy){
         return -3;
     }
     if(dist==min_enemy_dist&&min_enemy_dist!=4){
-       // cout<<"enemy surrounding"<<endl;
         return 3;
     }
     return 0;
@@ -70,11 +67,9 @@ float move(Board board,int row,int col,Player* player,Player* enemy,int init_ord
     float bonus=0;
     if(board.get_cell_color(row,col)=='w'){
         if(isCorner(row,col)){
-        // cout<<"Corner! bonus: 2"<<endl;
             bonus+=2;
         }
         else if(isEdge(row,col)){
-        // cout<<"Edge! bonus: 1"<<endl;
             bonus+=1;
             if((row==0||row==rows-1)&&board.get_cell_color(row,col-1)=='w'&&board.get_cell_color(row,col+1)=='w')
                 bonus+=0.1;
@@ -104,7 +99,7 @@ float move(Board board,int row,int col,Player* player,Player* enemy,int init_ord
         }
     }
     
-    return min - init_ord + bonus;
+    return (float)min - (float)init_ord + bonus;
 }
 void algorithm_A(Board board, Player player, int index[]){
 
@@ -120,8 +115,6 @@ void algorithm_A(Board board, Player player, int index[]){
                 if(tmp.win_the_game(player)){
                     index[0] = i;
                     index[1] = j;
-                    //cout<<"win step!!!!!!!"<<endl;
-                    //cout<<"row :"<<index[0]<<" col :"<<index[1]<<endl;
                     return;
                 }
             }
@@ -143,7 +136,6 @@ void algorithm_A(Board board, Player player, int index[]){
         for(int j=0;j<cols;j++){
             if(board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w'){
                 float score=move(board,i,j,&player,&enemy,init_ord);
-                cout<<"score:"<<score<<" "<<"("<<i<<", "<<j<<")"<<endl;
                 if(score > max){
                     max = score;
                     index[0]=i;
