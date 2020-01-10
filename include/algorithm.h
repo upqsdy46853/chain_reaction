@@ -12,4 +12,5 @@ void algorithm_C(Board board, Player player, int index[]);
 void algorithm_D(Board board, Player player, int index[]);
 void algorithm_E(Board board, Player player, int index[]);
 void algorithm_F(Board board, Player player, int index[]);
+
 #endif

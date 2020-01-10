@@ -288,7 +288,7 @@ float gameTree::BoardEvaluator(TreeNode *Node, int difficulty){
 
 void algorithm_B(Board board, Player player, int index[]){
     // algorithm_B is randomMove version bot
-    //srand(time(NULL)*time(NULL));
+    srand(time(NULL)*time(NULL));
     int row, col;
     char color = player.get_color();
     
@@ -299,7 +299,7 @@ void algorithm_B(Board board, Player player, int index[]){
     }
 
     index[0] = row;
-    index[1] = col; 
+    index[1] = col;
 }
 
 void algorithm_C(Board board, Player player, int index[]){
@@ -317,12 +317,6 @@ void algorithm_C(Board board, Player player, int index[]){
                     col=j;
             }
         }
-    }
-    while(1){
-        if(board.get_cell_color(row,col)==player.get_color()||board.get_cell_color(row,col)=='w')
-            break;
-        row=rand()%5;
-        col=rand()%6;
     }
     index[0]=row;
     index[1]=col;
@@ -354,8 +348,6 @@ void algorithm_E(Board board, Player player, int index[]){
                 if(tmp.win_the_game(player)){
                     index[0] = i;
                     index[1] = j;
-                    //cout<<"win step!!!!!!!"<<endl;
-                    //cout<<"row :"<<index[0]<<" col :"<<index[1]<<endl;
                     return;
                 }
             }
@@ -363,6 +355,13 @@ void algorithm_E(Board board, Player player, int index[]){
     }
 }
 void algorithm_F(Board board, Player player, int index[]){
-    // algorithm_F is heithoff version bot
-        cin>>index[0]>>index[1];
+    // algorithm_D is heithoff version bot
+    int row,col;
+    while(1){
+        cin>>row>>col;  
+        if(board.get_cell_color(row,col)=='w'||board.get_cell_color(row,col)==player.get_color())
+            break;
+    }
+    index[0]=row;
+    index[1]=col;
 }
